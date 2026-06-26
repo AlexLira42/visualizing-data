@@ -30,6 +30,32 @@ git clone https://github.com/AlexLira42/visualizing-data .claude/skills/visualiz
 
 Claude Code auto-discovers the skill from its `SKILL.md` front-matter `description` and applies it when you ask to create charts, dashboards, or data visualizations.
 
+## Credits & attribution
+
+This skill is based on the **`visualizing-data`** skill from
+[**ancoleman/ai-design-components**](https://github.com/ancoleman/ai-design-components)
+by **Anton Coleman**, released under the MIT License.
+
+This repository is an adaptation (not a structural GitHub fork — only the single
+skill is extracted) with additional reference guides and modifications. The
+original MIT copyright is **retained** in [LICENSE](LICENSE); changes are
+copyrighted separately and also released under MIT.
+
+## What's changed in this version
+
+On top of the original base skill (chart-selection framework, accessibility,
+colorblind-safe palettes, performance), this version adds:
+
+- `references/zelazny-message-framework.md` — message-first pipeline (the title states the *conclusion*, not the topic)
+- `references/perception-principles.md` — Cleveland-McGill ranking, Tufte (data-ink, lie factor), Gestalt
+- `references/dashboard-patterns.md` — single-glance operational dashboards (verdict-first, hero-KPI, status-verdicts) **+ a data-freshness rule: every unfiltered block shows `updated HH:MM (timezone)`**
+- `references/annotation-patterns.md` — storytelling layer (highlight-the-point, reference lines, so-what captions)
+- `references/critique-rubric.md` — a 7-dimension self-review pass before shipping a chart
+- `references/html-report-template.md` — self-contained single-file HTML report template
+- `references/staff-coverage-heatmap.md` — interactive shift-coverage heatmap template
+- `references/statistical-reports-docx.md` — styled `.docx` statistical-report template
+- `SKILL.ru.md` — Russian-language version
+
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE). Original work © 2025 Anton Coleman; modifications © 2026 Alexandr Lira.
