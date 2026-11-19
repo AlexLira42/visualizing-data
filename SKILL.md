@@ -106,7 +106,7 @@ Don't ship without a review pass. Score the chart on the 7-dimension rubric — 
 **Full rubric & output format:** See `references/critique-rubric.md`
 
 ### Output mode: shareable single-file HTML report
-For a portable, dependency-free deliverable (live dashboard, comparison prototype, exec read-out) that opens offline and hosts as a static file, build a **self-contained `.html`** with inline SVG charts.
+For a portable, dependency-free deliverable (live dashboard, comparison prototype, exec read-out) that opens offline and hosts as a static file, build a **self-contained `.html`** with inline SVG charts. If the page is rebuilt on a schedule, every conclusion in it follows the live-narrative rule (`references/dashboard-patterns.md` §8).
 
 **Template, skeleton & deploy notes:** See `references/html-report-template.md`
 
@@ -326,6 +326,7 @@ Light/dark/high-contrast themes work automatically via design tokens.
 6. **Truncated y-axis** - Indicate clearly or start at zero
 7. **Too many colors** - Limit to 6-8 distinct categories
 8. **Missing context** - Always label axes, include units
+9. **Static conclusion on a live dashboard** - the build refreshes numbers, not words; compute every verdict, status and state claim from the data (see `references/dashboard-patterns.md` §8)
 
 ---
 

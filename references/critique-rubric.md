@@ -18,6 +18,8 @@ For broad adversarial review of an analysis/decision (not the chart itself), han
 
 Pass bar: a presentation chart should score **≥12/14** with **no zeros**. A zero on dimension 1 (message) or 5 (accessibility) blocks ship.
 
+**Audit mode — existing auto-refreshed dashboard.** Render it with live data, dump every narrative element and mark each one: computed / literal / external fact. Literals → compute from data or delete; external facts → add date + source. Fix all blocks, not only the one that was reported.
+
 ---
 
 ## The 7 dimensions
@@ -40,6 +42,7 @@ Pass bar: a presentation chart should score **≥12/14** with **no zeros**. A ze
 - ❓ Can you write the takeaway as one declarative sentence? Is it the title?
 - ❌ Topic title «Динамика продаж» → ✅ message title «Продажи удвоились за год».
 - ❌ Slide makes two points → split into two charts.
+- ❓ **Live dashboard:** is the title or verdict computed from current data? Would it still be true if the numbers reversed? A literal conclusion on an auto-refreshed page is a defect even when it is true today (`dashboard-patterns.md` §8).
 
 ### 2 — Chart-type fit
 - Detect the comparison: component / item / time / frequency / correlation (`zelazny-message-framework.md`).

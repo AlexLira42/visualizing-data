@@ -42,6 +42,38 @@ Show the dashboard for 5 seconds, then ask: «what needs action right now?» If 
 - Charts: `viewBox` + `width:100%`; read `clientWidth` for full-width.
 - SVG up to ~1k marks; aggregate server-side beyond (see `performance.md`).
 
+## 8. Live narrative — words must refresh with the numbers
+
+An auto-refreshed dashboard rebuilds the **data** on every run, but any sentence written at build time stays as written. Within weeks the words contradict the numbers right next to them («после запуска доля выше» next to a share that fell). Rule: **every conclusion, status badge and state claim is computed from the same data it describes — or carries the date and source of the fact it states.**
+
+Five ways narrative goes stale, and the fix for each:
+
+| Mechanism | Example | Fix |
+|---|---|---|
+| Fixed sentence | headline typed as a string: «После запуска доля выше, а новый поставщик почти ни при чём» | build the sentence from data; branch the wording by direction **and** significance: «выросла / снизилась / почти не изменилась» |
+| Number inside a fixed phrase | `'сдвиг +'+x` → «сдвиг +-0,10»; `'не просел'`; status literal `['yes','КАННИБАЛИЗАЦИИ НЕ ВИДНО']` | sign-aware formatter with a real minus «−»; verdict words and status badges computed from the same values by an explicit rule (threshold or test) |
+| State from a manual date or flag | «off since date X; any event after X = on again» — late events flipped it back to «запущено, меряем эффект» | derive the state from activity (no events for N days → off since the last event); show the declared decision date as a separate label |
+| Hardcoded position | annotations at fixed indices `[11,23]`; the series grew and the year-ago label landed under the wrong month | locate by key (`rows.findIndex(r => r.key === prevKey)`); place paired labels by which value is higher, so they never collide |
+| Fact from outside the data | partner export figures, process status («рассылки нет») | date + source in the same sentence («по выгрузке партнёра за 01–12.11 — 36 из 109»); show it as stale after N days (e.g. 30) |
+
+Two related rules:
+- **Comparable tiles.** Tiles that compare entities (providers, channels, teams) show the same metric, over the same period, in the same definition, and the chart row under them uses that metric too. ❌ «A: продаж в день за 104 дня» next to «B: заявок в день за 105 дней».
+- **Totals from the parts as displayed.** A sum in a headline is computed from the rounded parts shown in the tiles. ❌ «добавили 0,64 пп» next to tiles 0,52 + 0,13.
+
+Helpers (JS):
+```js
+const sg=(v,f=x=>x.toFixed(2).replace('.',','))=>(v>0?'+':v<0?'−':'')+f(Math.abs(v));   // real minus
+const plural=(n,one,few,many)=>{n=Math.abs(n);const a=n%10,b=n%100;
+  return a===1&&b!==11?one:a>=2&&a<=4&&(b<10||b>=20)?few:many;};
+const verb=(d,p)=>p>=0.05?'почти не изменилась':d>0?'выросла':'снизилась';             // p — two-proportion test
+const idle=(Date.parse(lastDay)-Date.parse(lastEvent))/864e5;                           // state by activity
+const offSince=declared&&lastEvent<=declared?declared:(idle>=7?lastEvent:null);
+```
+
+**Verify — not with grep.** The narrative is rendered client-side, so grepping the built HTML checks the script, not the text. Render the page with real data in a headless browser (Playwright), dump every headline, note, KPI tile, status badge and table, and read each one against the numbers. After deploy: old phrases on the live URL = 0, new ones ≥ 1. Re-check `<text>` overlaps at 1440/1024/390 — computed labels move.
+
+**When to audit.** On every data-regime change (launch, switch-off, new source, new definition), at least monthly, and on any question «это ещё актуально?». Audit **all** blocks, not just the one asked about: the same mechanism sits in the neighbours.
+
 ---
 
 ## Anti-patterns
@@ -53,6 +85,9 @@ Show the dashboard for 5 seconds, then ask: «what needs action right now?» If 
 - ❌ An unfiltered block with neither «обновлено» nor a period — reader can't tell how fresh it is.
 - ❌ Bare timestamp without timezone, or server/UTC time labeled as local (МСК).
 - ❌ Primary insight hidden behind a hover tooltip.
+- ❌ A conclusion, status badge or state claim typed as a literal on an auto-refreshed dashboard — it will contradict the numbers within weeks (§8).
+- ❌ Fixing only the stale sentence someone pointed out — the same mechanism sits in other blocks.
+- ❌ Comparison tiles with different metrics or periods side by side.
 
 ## Ship checklist
 - [ ] One verdict line at top, status-colored, from live data, dual-encoded.
@@ -62,3 +97,6 @@ Show the dashboard for 5 seconds, then ask: «what needs action right now?» If 
 - [ ] Every unfiltered block carries «обновлено HH:MM (TZ)»; filtered blocks show the selected period instead.
 - [ ] Timestamps generated in the business timezone (МСК), not server/UTC; TZ printed.
 - [ ] Passes the 5-second «what needs action?» test.
+- [ ] Every verdict, status and state sentence is computed from the data it describes; facts from outside the data carry date + source (§8).
+- [ ] Wording branches on sign and significance; real minus «−»; correct plural forms.
+- [ ] Rendered in a headless browser with real data and read block by block; old phrases on the live URL = 0.
