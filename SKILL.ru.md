@@ -90,6 +90,7 @@ WCAG 2.1 AA), палитры для дальтоников и стратегии
 - Показать распределение возрастов → Histogram или Violin Plot
 - Исследовать корреляцию → Scatter Plot
 - Показать разбивку бюджета → Treemap или Stacked Bar
+- Показать, куда приходят элементы через несколько шагов (бот → ИИ-агент → сотрудник; заявка → контакт → продажа) → диаграмма потоков Sankey (`references/sankey-flow-diagram.md`)
 - Нужен управленческий deliverable в формате Word → шаблон статистического отчета `.docx`
 - Нужно покрытие сменами по часам/дням с интерактивом → Staff Coverage Heatmap (HTML)
 
@@ -347,7 +348,7 @@ npm install docx
 Категориальные (категории/группы)
   ├─ Сравнить значения → Bar Chart
   ├─ Показать состав → Treemap или Pie Chart (<6 секторов)
-  └─ Показать поток → Sankey Diagram
+  └─ Показать поток через шаги → Sankey Diagram (`references/sankey-flow-diagram.md`)
 
 Непрерывные (числа)
   ├─ Одна переменная → Histogram, Violin Plot
@@ -387,6 +388,7 @@ npm install docx
 - `references/performance.md` — оптимизация по объему данных
 - `references/statistical-reports-docx.md` — шаблон статистического отчета `.docx`
 - `references/staff-coverage-heatmap.md` — шаблон интерактивной тепловой карты укомплектованности
+- `references/sankey-flow-diagram.md` — многошаговая диаграмма потоков (Sankey), как отчёт Intercom «How you're handling conversations»: когда применять, модель данных и проверка баланса потоков, подписи, цвета, рендерер без зависимостей
 
 **По языкам:**
 - `references/javascript/` — примеры React, D3.js, Plotly
@@ -396,6 +398,7 @@ npm install docx
 **Ассеты:**
 - `assets/color-palettes/` — доступные цветовые схемы
 - `assets/example-datasets/` — примеры данных для тестов
+- `assets/sankey/sankey.js` — рендерер Sankey без зависимостей (inline SVG, тёмная/светлая тема, наведение, клавиатура, таблица данных)
 
 ---
 
@@ -406,6 +409,7 @@ npm install docx
 - `examples/javascript/line-chart.tsx`
 - `examples/javascript/scatter-plot.tsx`
 - `examples/javascript/accessible-chart.tsx`
+- `examples/html/sankey-conversations.html` — демо диаграммы потоков, открывается в браузере без сборки
 
 ```bash
 cd examples/javascript && npm install && npm start

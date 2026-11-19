@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Диаграмма потоков (Sankey) — пример</title>
+<style>
+  :root{
+    --bg:#0a0e16;--card:#0f1117;--line:#1e2535;--ink:#f8fafc;--mut:#94a3b8;
+    --sankey-ink:#e8ecf4;--sankey-muted:#aab3c5;--sankey-halo:rgba(15,17,23,.85);
+    --sankey-link-opacity:.42;--sankey-tip-bg:#111827;--sankey-tip-ink:#f9fafb;--sankey-tip-line:#2a3650;
+    --sankey-line:rgba(127,141,176,.25);
+  }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){
+      --bg:#f4f6fa;--card:#ffffff;--line:#e3e8f0;--ink:#0f172a;--mut:#5b6474;
+      --sankey-ink:#111827;--sankey-muted:#4b5563;--sankey-halo:rgba(255,255,255,.9);
+      --sankey-link-opacity:.34;--sankey-tip-bg:#ffffff;--sankey-tip-ink:#111827;--sankey-tip-line:#d6dbe4;
+      --sankey-line:#e5e7eb;
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#f4f6fa;--card:#ffffff;--line:#e3e8f0;--ink:#0f172a;--mut:#5b6474;
+    --sankey-ink:#111827;--sankey-muted:#4b5563;--sankey-halo:rgba(255,255,255,.9);
+    --sankey-link-opacity:.34;--sankey-tip-bg:#ffffff;--sankey-tip-ink:#111827;--sankey-tip-line:#d6dbe4;
+    --sankey-line:#e5e7eb;
+  }
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  .wrap{max-width:1240px;margin:0 auto;padding:28px 16px}
+  .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  h1{font-size:24px;font-weight:800;margin:0 0 4px}
+  .sub{font-size:13px;color:var(--mut);margin:0 0 14px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:18px}
+  .head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .msg{font-size:19px;font-weight:800;margin:0 0 2px}
+  .stamp{font-size:12px;color:var(--mut);white-space:nowrap}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin:0 0 6px}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+  .theme{font:inherit;font-size:12px;color:var(--ink);background:transparent;border:1px solid var(--line);
+         border-radius:8px;padding:6px 10px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Диаграмма потоков: куда в итоге приходит каждый элемент</h1>
+      <div class="sub">Пример скилла visualizing-data · данные синтетические · наведите на узел или поток, Tab — по узлам</div>
+    </div>
+    <button class="theme" id="theme" type="button">Сменить тему</button>
+  </div>
+
+  <section class="panel" aria-labelledby="t1">
+    <div class="head">
+      <h2 class="msg" id="t1">—</h2>
+      <div class="stamp">пример · синтетические данные</div>
+    </div>
+    <div class="sub" id="s1">—</div>
+    <div class="legend" id="l1"></div>
+    <div id="flow1"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="t2">
+    <div class="head">
+      <h2 class="msg" id="t2">—</h2>
+      <div class="stamp">пример · синтетические данные</div>
+    </div>
+    <div class="sub" id="s2">—</div>
+    <div class="legend" id="l2"></div>
+    <div id="flow2"></div>
+  </section>
+</div>
+
+<!-- Single-file deliverable: paste the contents of assets/sankey/sankey.js into this <script> instead of src. -->
+<script src="../../assets/sankey/sankey.js"></script>
+<script>
+(function () {
+  // 1. Обращения в поддержку: состояние на каждом шаге — отдельный узел, даже если подпись повторяется.
+  var conversations = {
+    nodes: [
+      { id: 'all', label: 'Обращения', group: 'root' },
+      { id: 'ai', label: '**ИИ-агент** подключился', group: 'ai' },
+      { id: 'ai-blocked', label: '**ИИ-агент** ограничен правилами', group: 'escalated' },
+      { id: 'bot', label: '**Чат-бот** ответил', group: 'bot' },
+      { id: 'tm1', label: '**Сотрудник** ответил', group: 'human' },
+      { id: 'pending', label: 'Ожидает ответа клиента', group: 'pending' },
+      { id: 'ai-resolved', label: 'Решено **ИИ-агентом**', group: 'resolved' },
+      { id: 'handoff', label: 'Передано по процедуре', group: 'bot' },
+      { id: 'escalated', label: 'Эскалация на **сотрудника**', group: 'escalated' },
+      { id: 'workflow', label: 'Ушло в **сценарий**', group: 'bot' },
+      { id: 'bot-closed', label: 'Закрыто **чат-ботом**', group: 'resolved' },
+      { id: 'tm2', label: '**Сотрудник** ответил', group: 'human' },
+      { id: 'tm1-closed', label: 'Закрыто **сотрудником**', group: 'resolved' },
+      { id: 'tm3', label: '**Сотрудник** ответил', group: 'human' },
+      { id: 'tm-closed', label: 'Закрыто **сотрудником**', group: 'resolved' }
+    ],
+    links: [
+      { source: 'all', target: 'ai', value: 610 },
+      { source: 'all', target: 'ai-blocked', value: 20 },
+      { source: 'all', target: 'bot', value: 356 },
+      { source: 'all', target: 'tm1', value: 14 },
+      { source: 'ai', target: 'pending', value: 6 },
+      { source: 'ai', target: 'ai-resolved', value: 545 },
+      { source: 'ai', target: 'handoff', value: 6 },
+      { source: 'ai', target: 'escalated', value: 53 },
+      { source: 'ai-blocked', target: 'escalated', value: 20 },
+      { source: 'bot', target: 'workflow', value: 18 },
+      { source: 'bot', target: 'bot-closed', value: 140 },
+      { source: 'bot', target: 'tm2', value: 198 },
+      { source: 'tm1', target: 'tm1-closed', value: 14 },
+      { source: 'escalated', target: 'tm3', value: 73 },
+      { source: 'handoff', target: 'tm3', value: 6 },
+      { source: 'tm3', target: 'tm-closed', value: 79 },
+      { source: 'tm2', target: 'tm-closed', value: 198 }
+    ]
+  };
+
+  // 2. Заявки отдела продаж: собрано из путей отдельных заявок (так обычно приходят данные).
+  var leads = Sankey.fromPaths([
+    { steps: ['Заявки', 'Не взяли в работу'], value: 60 },
+    { steps: ['Заявки', 'Взяли в работу', 'Не дозвонились'], value: 380 },
+    { steps: ['Заявки', 'Взяли в работу', 'Контакт', 'Отказ клиента'], value: 210 },
+    { steps: ['Заявки', 'Взяли в работу', 'Контакт', 'Подборка', 'Думает'], value: 160 },
+    { steps: ['Заявки', 'Взяли в работу', 'Контакт', 'Подборка', 'Оплатил'], value: 90 },
+    { steps: ['Заявки', 'Взяли в работу', 'Контакт', 'Купил без подборки'], value: 100 }
+  ], { groups: {
+    'Заявки': 'root', 'Взяли в работу': 'human', 'Контакт': 'human', 'Подборка': 'human',
+    'Не взяли в работу': 'escalated', 'Не дозвонились': 'escalated',
+    'Отказ клиента': 'pending', 'Думает': 'pending', 'Оплатил': 'resolved', 'Купил без подборки': 'resolved'
+  } });
+
+  // Выводы считаются из тех же данных, что и диаграмма, — не пишутся текстом.
+  function nf(v) { return Math.round(v).toLocaleString('ru-RU'); }
+  function pct(v, total) { return Math.round(v / total * 100) + '%'; }
+
+  var L1 = Sankey.layout(conversations);
+  var v1 = {}; L1.nodes.forEach(function (n) { v1[n.id] = n.value; });
+  var byTeam = v1['tm1-closed'] + v1['tm-closed'];
+  var title1 = 'ИИ-агент сам решает ' + pct(v1['ai-resolved'], L1.total) + ' обращений, сотрудник закрывает ' +
+    pct(byTeam, L1.total);
+  document.getElementById('t1').textContent = title1;
+  document.getElementById('s1').textContent = 'Как обрабатываются обращения за 7 дней · % — от всех ' +
+    nf(L1.total) + ' обращений · у чат-бота до сотрудника доходит ' + pct(v1['tm2'], v1['bot']) + ' его обращений';
+  Sankey.render('#flow1', conversations, { ariaLabel: title1 });
+
+  var L2 = Sankey.layout(leads);
+  var losses = L2.nodes.filter(function (n) { return n.group === 'escalated'; })
+    .sort(function (a, b) { return b.value - a.value; });
+  var worst = losses[0];
+  var title2 = 'Больше всего заявок теряется на шаге «' + worst.label + '»: ' + nf(worst.value) + ' из ' +
+    nf(L2.total) + ' (' + pct(worst.value, L2.total) + ')';
+  document.getElementById('t2').textContent = title2;
+  document.getElementById('s2').textContent = 'Путь заявки в отделе продаж · построено из путей заявок (Sankey.fromPaths) · ' +
+    'подсвечен поток, о котором вывод · % — от всех ' + nf(L2.total) + ' заявок';
+  Sankey.render('#flow2', leads, { ariaLabel: title2, highlight: [worst.id] });
+
+  // Легенда: цвет = кто обработал / чем закончилось (подписи узлов дублируют смысл).
+  // Порядок групп постоянный, а не по первому появлению — от периода к периоду легенда не прыгает.
+  var ORDER = ['ai', 'bot', 'human', 'escalated', 'resolved', 'pending'];
+  function legend(id, data, names) {
+    var present = {};
+    data.nodes.forEach(function (n) { if (n.group) present[n.group] = true; });
+    document.getElementById(id).innerHTML = ORDER.filter(function (g) { return present[g] && names[g]; })
+      .map(function (g) { return '<span><i style="background:' + Sankey.PALETTE[g] + '"></i>' + names[g] + '</span>'; })
+      .join('');
+  }
+  legend('l1', conversations, { ai: 'ИИ-агент', bot: 'Чат-бот и сценарии', human: 'Сотрудник',
+    escalated: 'Эскалация, ограничение', resolved: 'Решено, закрыто', pending: 'Ожидание' });
+  legend('l2', leads, { human: 'Работа менеджера', escalated: 'Потеря заявки', resolved: 'Покупка',
+    pending: 'Отказ, раздумье' });
+
+  document.getElementById('theme').addEventListener('click', function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute('data-theme') ? root.getAttribute('data-theme') === 'dark'
+      : !window.matchMedia('(prefers-color-scheme: light)').matches;
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  });
+})();
+</script>
+</body>
+</html>

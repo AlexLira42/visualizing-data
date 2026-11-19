@@ -13,7 +13,9 @@ A [Claude Code](https://claude.com/claude-code) skill for building **dashboards,
   - `annotation-patterns.md`, `critique-rubric.md`, `html-report-template.md`
   - `accessibility.md`, `color-systems.md`, `performance.md`
   - `staff-coverage-heatmap.md`, `statistical-reports-docx.md`
+  - `sankey-flow-diagram.md` — multi-stage flow (Sankey) diagram: where items end up across steps
   - language guides under `references/javascript/`, `references/python/`, `references/go/`, `references/rust/`
+- **`assets/sankey/sankey.js`** — dependency-free Sankey renderer (inline SVG); demo: `examples/html/sankey-conversations.html`.
 - **`examples/`** — working code samples.
 
 ## Install
@@ -54,6 +56,7 @@ colorblind-safe palettes, performance), this version adds:
 - `references/html-report-template.md` — self-contained single-file HTML report template
 - `references/staff-coverage-heatmap.md` — interactive shift-coverage heatmap template
 - `references/statistical-reports-docx.md` — styled `.docx` statistical-report template
+- `references/sankey-flow-diagram.md` + `assets/sankey/sankey.js` — multi-stage flow (Sankey) diagram in the style of Intercom's "How you're handling conversations" report: dependency-free renderer, data model with a flow-balance check, demo page
 - `SKILL.ru.md` — Russian-language version
 
 ## License

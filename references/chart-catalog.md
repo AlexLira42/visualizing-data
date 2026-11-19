@@ -515,6 +515,7 @@ Before  After
 - Energy flow from sources to uses
 - Customer journey through website
 - Supply chain visualization
+- Multi-stage process outcomes: support conversations (bot → AI agent → teammate → closed by whom), leads with the reason for every loss
 
 **Why It's Powerful:**
 - Instantly reveals major flows and losses
@@ -523,11 +524,12 @@ Before  After
 - Reveals inefficiencies and bottlenecks
 
 **Implementation:**
-- Use D3-sankey library
-- Nodes = states, Links = flows
+- Dependency-free renderer: `assets/sankey/sankey.js`; rules, data model and checklist: `references/sankey-flow-diagram.md`. Alternatives: d3-sankey, Plotly `go.Sankey`
+- Nodes = states at a step (the same state at another step is a separate node), Links = flows
+- Every middle node passes on what it receives (in = out); add explicit end nodes for items that stop
 - Link width proportional to quantity
-- Color-code by category or source
-- Add hover for exact values
+- Label nodes «N (X% of total)» + state name; color by meaning (who handled it / how it ended)
+- Add hover for exact values and a data-table fallback
 
 **Structure:**
 ```

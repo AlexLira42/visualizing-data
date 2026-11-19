@@ -79,6 +79,7 @@ What story to tell? [comparison | trend | distribution | relationship | composit
 - Display distribution of ages → Histogram or Violin Plot
 - Explore correlation → Scatter Plot
 - Show budget breakdown → Treemap or Stacked Bar
+- Show where items end up across steps (bot → AI agent → teammate; lead → contact → sale) → Sankey Flow Diagram (`references/sankey-flow-diagram.md`)
 - Need executive deliverable in Word format → `.docx` Statistical Report Template
 - Need staffing coverage by hour/day with interaction → Staff Coverage Heatmap (HTML)
 
@@ -336,7 +337,7 @@ START: What is your data?
 Categorical (categories/groups)
   ├─ Compare values → Bar Chart
   ├─ Show composition → Treemap or Pie Chart (<6 slices)
-  └─ Show flow → Sankey Diagram
+  └─ Show flow across steps → Sankey Diagram (`references/sankey-flow-diagram.md`)
 
 Continuous (numbers)
   ├─ Single variable → Histogram, Violin Plot
@@ -376,6 +377,7 @@ Geographic (locations)
 - `references/performance.md` - Optimization by data volume
 - `references/statistical-reports-docx.md` - `.docx` statistical report template
 - `references/staff-coverage-heatmap.md` - interactive staffing coverage heatmap template
+- `references/sankey-flow-diagram.md` - multi-stage flow (Sankey) like Intercom's "How you're handling conversations": when to use, data model and conservation check, labels, colors, dependency-free renderer
 
 **Language-Specific:**
 - `references/javascript/` - React, D3.js, Plotly examples
@@ -385,6 +387,7 @@ Geographic (locations)
 **Assets:**
 - `assets/color-palettes/` - Accessible color schemes
 - `assets/example-datasets/` - Sample data for testing
+- `assets/sankey/sankey.js` - dependency-free Sankey renderer (inline SVG, dark/light, hover, keyboard, data table)
 
 ---
 
@@ -395,6 +398,7 @@ Geographic (locations)
 - `examples/javascript/line-chart.tsx`
 - `examples/javascript/scatter-plot.tsx`
 - `examples/javascript/accessible-chart.tsx`
+- `examples/html/sankey-conversations.html` - Sankey flow demo, opens in a browser without a build step
 
 ```bash
 cd examples/javascript && npm install && npm start
